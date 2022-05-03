@@ -47,8 +47,7 @@ app.post('/login', jsonParser, function (req, res, next) {
     try {
         connection.query("SELECT * FROM users WHERE email = ?", [req.body.email], (err, users, fields) => {
             if (err) {
-                console.log(err);
-                return res.status(400).send();
+                return res.json({status: "error", message: err});
             }if(users.length == 0){
                 console.log("ไม่พบข้อมูล Users", err);
                 return res.status(400).send();
@@ -56,9 +55,9 @@ app.post('/login', jsonParser, function (req, res, next) {
             bcrypt.compare(req.body.password, users[0].password, function(err, isLogin) {
               if(isLogin){
                 var token = jwt.sign({ email: users[0].email }, secret, { expiresIn: '1h' });
-                return res.status(201).json({ message: "Login สำเร็จ", token});
+                return res.json({status: "ok", message: 'login สำเร็จ', token});
               }else{
-                return res.status(400).json({ message: "Login ไม่สำเร็จ"});
+                return res.json({status: "error", message: 'login ไม่สำเร็จ'});
               }
             });
             
