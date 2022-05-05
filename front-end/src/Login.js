@@ -36,27 +36,27 @@ const theme = createTheme();
 
 export default function SignInSide() {
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-    const jsonData = {
-        email: data.get('email'),
-      password: data.get('password'),
-    };
+  const onSubmit =  ({ email,password }) => {
+
     fetch('http://localhost:3333/login', {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(jsonData),
+        body: JSON.stringify({ email,password }),
     })
     .then(response => response.json())
     .then(data => {
         if(data.status === 'ok'){
           alert('login สำเสร็จ')
           localStorage.setItem('token', data.token);
-          window.location = '/album'
+          //window.location = '/album'
         }else {
           alert('login ไม่สำเสร็จ')
           
@@ -103,7 +103,7 @@ export default function SignInSide() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <form onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
               <TextField
                 InputProps={{
                   startAdornment: (
@@ -118,11 +118,17 @@ export default function SignInSide() {
                 id="email"
                 label="Email Address"
                 name="email"
-                //{...register("email",{ required: 'Email Address is required.' })}
                 autoComplete="email"
                 autoFocus
-                helperText="Please enter your Email Address"
-                
+                {...register("email", {
+                  required: "กรุณากรอก Email Address",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "รูปแบบ Email Address ไม่ถูกต้อง",
+                  },
+                })}
+                error={!!errors?.email}
+                helperText={errors?.email ? errors.email.message : null}
               />
               <TextField
                 InputProps={{
@@ -140,7 +146,11 @@ export default function SignInSide() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                helperText="Please enter your password"
+                {...register("password", {
+                  required: "กรุณากรอก Password ",
+                })}
+                error={!!errors?.password}
+                helperText={errors?.password ? errors.password.message : null}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
@@ -167,7 +177,7 @@ export default function SignInSide() {
                 </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />
-            </Box>
+            </form>
           </Box>
         </Grid>
       </Grid>
