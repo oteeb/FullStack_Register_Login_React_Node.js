@@ -12,6 +12,12 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import image from "./img/background.jpg"; 
+import InputAdornment from '@mui/material/InputAdornment';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import KeyIcon from '@mui/icons-material/Key';
+import { useForm } from "react-hook-form";
+
 
 function Copyright(props) {
   return (
@@ -29,14 +35,15 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignInSide() {
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
     const jsonData = {
         email: data.get('email'),
       password: data.get('password'),
     };
-
     fetch('http://localhost:3333/login', {
         method: 'POST', 
         headers: {
@@ -46,10 +53,13 @@ export default function SignInSide() {
     })
     .then(response => response.json())
     .then(data => {
-        if(data.status == 'ok'){
-            alert('login สำเสร็จ')
-        } else {
-            alert('login ไม่สำเสร็จ')
+        if(data.status === 'ok'){
+          alert('login สำเสร็จ')
+          localStorage.setItem('token', data.token);
+          window.location = '/album'
+        }else {
+          alert('login ไม่สำเสร็จ')
+          
         }
         
     })
@@ -69,7 +79,7 @@ export default function SignInSide() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: 'url(https://source.unsplash.com/random)',
+            backgroundImage:`url(${image})`,
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
@@ -95,16 +105,33 @@ export default function SignInSide() {
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
+                }}
                 margin="normal"
                 required
                 fullWidth
                 id="email"
                 label="Email Address"
                 name="email"
+                //{...register("email",{ required: 'Email Address is required.' })}
                 autoComplete="email"
                 autoFocus
+                helperText="Please enter your Email Address"
+                
               />
               <TextField
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <KeyIcon />
+                    </InputAdornment>
+                  ),
+                }}
                 margin="normal"
                 required
                 fullWidth
@@ -113,6 +140,7 @@ export default function SignInSide() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                helperText="Please enter your password"
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
@@ -133,7 +161,7 @@ export default function SignInSide() {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">
+                  <Link href="/Register" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>

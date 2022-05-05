@@ -1,7 +1,6 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
-import CameraIcon from '@mui/icons-material/PhotoCamera';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -15,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { GoSignOut } from "react-icons/go";
 
 function Copyright() {
   return (
@@ -34,15 +34,50 @@ const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const theme = createTheme();
 
 export default function Album() {
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    fetch('http://localhost:3333/authen', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+token
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'ok'){
+          
+        }else {
+          alert('ไม่มี token สำหรับการ login')
+          localStorage.removeItem('token');
+          window.location = '/login'
+        }
+        
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+
+  }, [])
+
+  const handleLoguot = (event) => {
+    event.preventDefault();
+    localStorage.removeItem('token');
+    window.location = '/login'
+  }
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppBar position="relative">
         <Toolbar>
-          <CameraIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" color="inherit" noWrap>
-            Album layout
+          <Button  onClick={handleLoguot}>
+          <GoSignOut color="white" variant="h3" />
+          ''
+          <Typography variant="h6" color="white" noWrap>
+            SignOut 
           </Typography>
+          </Button>
         </Toolbar>
       </AppBar>
       <main>
