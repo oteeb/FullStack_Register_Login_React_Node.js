@@ -45,7 +45,7 @@ app.post('/register', jsonParser, function (req, res, next) {
 })
 
 app.post('/login', jsonParser, function (req, res, next) {
-  const { fname, lname, st } = req.body;
+  
     try {
         connection.query("SELECT * FROM users WHERE email = ?", [req.body.email], (err, users, fields) => {
             if (err) {
@@ -58,7 +58,7 @@ app.post('/login', jsonParser, function (req, res, next) {
             bcrypt.compare(req.body.password, users[0].password, function(err, isLogin) {
               if(isLogin){
                 var token = jwt.sign({ email: users[0].email }, secret, { expiresIn: '1h' });
-                return res.json({status: "ok", message: 'login สำเร็จ', token,fname,lname,st});
+                return res.json({status: "ok", message: 'login สำเร็จ', token});
               }else{
                 return res.json({status: "error", message: 'login ไม่สำเร็จ'});
               }

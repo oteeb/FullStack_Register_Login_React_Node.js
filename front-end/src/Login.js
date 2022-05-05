@@ -56,7 +56,7 @@ export default function SignInSide() {
         if(data.status === 'ok'){
           alert('login สำเสร็จ')
           localStorage.setItem('token', data.token);
-          //window.location = '/album'
+          window.location = '/album'
         }else {
           alert('login ไม่สำเสร็จ')
           
@@ -152,10 +152,7 @@ export default function SignInSide() {
                 error={!!errors?.password}
                 helperText={errors?.password ? errors.password.message : null}
               />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              
               <Button
                 type="submit"
                 fullWidth
