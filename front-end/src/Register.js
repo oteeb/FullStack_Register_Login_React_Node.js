@@ -38,14 +38,14 @@ export default function SignUp() {
   } = useForm();
 
 
-  const onSubmit = ({ email, password, fname, lname }) => {
+  const onSubmit = ({ email, password, fname, lname, cfpassword }) => {
 
     fetch('http://localhost:3333/register', {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, fname, lname }),
+        body: JSON.stringify({ email, password, fname, lname, cfpassword }),
     })
     .then(response => response.json())
     .then(data => {
@@ -54,6 +54,8 @@ export default function SignUp() {
           window.location = '/login'
         }else if (data.status === 'error'){
           alert('กรุณากรอกข้อมูล Users ให้ครบทั้งหมด')
+        }else if (data.status === 'errorremail'){
+          alert('มี email นี้อยู่แล้ว !')
         }
         else {
           alert('ลงทะเบียน ไม่สำเสร็จ')
@@ -144,7 +146,25 @@ export default function SignUp() {
                   autoComplete="new-password"
                   {...register("password", {
                     required: "กรุณากรอก Password ",
-                    minLength: {value: 4,message:'ต้องใส่อย่างน้อย 6 ตัวอักษร'}
+                    minLength: {value: 6,message:'ต้องใส่อย่างน้อย 6 ตัวอักษร'}
+                  })}
+                  error={!!errors?.password}
+                  helperText={errors?.password ? errors.password.message : null}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="cfpassword"
+                  label="ConfirmPassword"
+                  type="password"
+                  id="cfpassword"
+                  autoComplete="new-password"
+                  {...register("cfpassword", {
+                    required: "กรุณากรอก ConfirmPassword ",
+                    minLength: {value: 6,message:'ต้องใส่อย่างน้อย 6 ตัวอักษร'}
                   })}
                   error={!!errors?.password}
                   helperText={errors?.password ? errors.password.message : null}
