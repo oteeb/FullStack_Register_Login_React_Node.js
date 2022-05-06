@@ -49,9 +49,10 @@ export default function Album() {
         if(data.status === 'ok'){
           
         }else {
-          alert('ไม่มี token สำหรับการ login')
-          localStorage.removeItem('token');
           window.location = '/login'
+          alert('ไม่มี token สำหรับการ ใช้งาน กรุณา Login')
+          localStorage.removeItem('token');
+          
         }
         
     })
@@ -64,7 +65,7 @@ export default function Album() {
   const handleLoguot = (event) => {
     event.preventDefault();
     localStorage.removeItem('token');
-    window.location = '/login'
+    window.location = '/'
   }
   return (
     <ThemeProvider theme={theme}>

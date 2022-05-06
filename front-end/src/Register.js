@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useForm } from "react-hook-form";
 
 function Copyright(props) {
   return (
@@ -29,28 +30,32 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const jsonData = {
-        email: data.get('email'),
-        password: data.get('password'),
-        fname: data.get('firstName'),
-        lname: data.get('lastName'),
-    };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+
+  const onSubmit = ({ email, password, fname, lname }) => {
 
     fetch('http://localhost:3333/register', {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(jsonData),
+        body: JSON.stringify({ email, password, fname, lname }),
     })
     .then(response => response.json())
     .then(data => {
         if(data.status === 'ok'){
           alert('ลงทะเบียน สำเสร็จ')
-        }else {
+          window.location = '/login'
+        }else if (data.status === 'error'){
+          alert('กรุณากรอกข้อมูล Users ให้ครบทั้งหมด')
+        }
+        else {
           alert('ลงทะเบียน ไม่สำเสร็จ')
         }
         
@@ -80,27 +85,33 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <form onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="fname"
                   required
                   fullWidth
-                  id="firstName"
+                  id="fname"
                   label="First Name"
                   autoFocus
+                  {...register("fname", {required: "กรุณากรอก First Name"})}
+                  error={!!errors?.fname}
+                  helperText={errors?.fname ? errors.fname.message : null}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
+                  id="lname"
                   label="Last Name"
-                  name="lastName"
+                  name="lname"
                   autoComplete="family-name"
+                  {...register("lname", {required: "กรุณากรอก Last Name"})}
+                  error={!!errors?.lname}
+                  helperText={errors?.lname ? errors.lname.message : null}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -111,6 +122,15 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  {...register("email", {
+                    required: "กรุณากรอก Email Address",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "รูปแบบ Email Address ไม่ถูกต้อง",
+                    },
+                  })}
+                  error={!!errors?.email}
+                  helperText={errors?.email ? errors.email.message : null}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -122,14 +142,15 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  {...register("password", {
+                    required: "กรุณากรอก Password ",
+                    minLength: {value: 4,message:'ต้องใส่อย่างน้อย 6 ตัวอักษร'}
+                  })}
+                  error={!!errors?.password}
+                  helperText={errors?.password ? errors.password.message : null}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
+             
             </Grid>
             <Button
               type="submit"
@@ -146,7 +167,7 @@ export default function SignUp() {
                 </Link>
               </Grid>
             </Grid>
-          </Box>
+          </form>
         </Box>
         <Copyright sx={{ mt: 5 }} />
       </Container>

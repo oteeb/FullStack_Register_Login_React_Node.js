@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 var jwt = require('jsonwebtoken');
 const secret = 'Fullstack-Login';
+const { body, validationResult } = require('express-validator');
 
 app.use(cors())
 
@@ -20,9 +21,11 @@ const connection = mysql.createConnection({
   //port: '8889'
 })
 
-app.post('/register', jsonParser, function (req, res, next) {
-  const { email, password, fname, lname } = req.body;
 
+app.post('/register', jsonParser,  function (req, res, next) {
+
+  const { email, password, fname, lname } = req.body;
+  
   bcrypt.hash(password, saltRounds, function(err, hash) {
     try {
       connection.query(
@@ -31,13 +34,17 @@ app.post('/register', jsonParser, function (req, res, next) {
           (err, results, fields) => {
               if (err) {
                   console.log("ไม่สามารถเพิ่มข้อมูลได้", err);
-                  return res.json({status: "error", message: 'ไม่สามารถเพิ่มข้อมูล Users ได้',err});
+                  return res.json({status: "errorr", message: 'ไม่สามารถเพิ่มข้อมูล Users ได้',err});
                   //return res.status(400).send();
+              }
+              if(!(email && password && fname && lname)){
+                return res.json({status: "error", message: 'กรุณากรอก Users ให้ครบทั้งหมด'});
               }
               return res.status(201).json({status: "ok", message: "เพิ่มข้อมูลได้สำเร็จ"});
           }
       )
-  } catch(err) {
+  } 
+  catch(err) {
       console.log(err);
       return res.status(500).send();
   }
