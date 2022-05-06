@@ -53,9 +53,11 @@ export default function SignUp() {
           alert('ลงทะเบียน สำเสร็จ')
           window.location = '/login'
         }else if (data.status === 'error'){
-          alert('กรุณากรอกข้อมูล Users ให้ครบทั้งหมด')
+          alert('กรุณากรอกข้อมูล Users ให้ครบทั้งหมด !')
         }else if (data.status === 'errorremail'){
-          alert('มี email นี้อยู่แล้ว !')
+          alert('มี Email นี้อยู่แล้ว !')
+        }else if (data.status === 'errorpassword'){
+          alert('Password ไม่ตรงกัน !')
         }
         else {
           alert('ลงทะเบียน ไม่สำเสร็จ')

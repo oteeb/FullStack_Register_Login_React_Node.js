@@ -5,7 +5,7 @@ var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
+//const saltRounds = 10;
 var jwt = require('jsonwebtoken');
 const secret = 'Fullstack-Login';
 const { body, validationResult } = require('express-validator');
@@ -55,42 +55,9 @@ app.post('/register', jsonParser, function(req, res, next){
       }
     });
   }else{
-    return res.json({status: "error", message: 'Password ไม่ตรงกัน'});
+    return res.json({status: "errorpassword", message: 'Password ไม่ตรงกัน'});
   }
 });
-
-
-/*app.post('/register', jsonParser,  function (req, res, next) {
-
-  const { email, password, fname, lname, cfpassword } = req.body;
-  //console.log(email);
-  
-  bcrypt.hash(password, saltRounds, function(err, hash) {
-    try {
-      connection.query(
-          "INSERT INTO users(email, password, fname, lname) VALUES(?, ?, ?, ?)",
-          [email, hash, fname, lname],
-          (err, results, fields) => {
-              if (err) {
-                  console.log("ไม่สามารถเพิ่มข้อมูลได้", err);
-                  return res.json({status: "errorr", message: 'ไม่สามารถเพิ่มข้อมูล Users ได้',err});
-                  //return res.status(400).send();
-              }
-              if(!(email && password && fname && lname && cfpassword)){
-                return res.json({status: "error", message: 'กรุณากรอก Users ให้ครบทั้งหมด'});
-              }
-              
-              return res.status(201).json({status: "ok", message: "เพิ่มข้อมูลได้สำเร็จ"});
-              
-          }
-      )
-  } 
-  catch(err) {
-      console.log(err);
-      return res.status(500).send();
-  }
-  });
-})*/
 
 app.post('/login', jsonParser, function (req, res, next) {
   
