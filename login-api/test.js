@@ -1,72 +1,39 @@
-const express = require('express');
-const path = require('path');
-const cookieSession = require('cookie-session');
-const bcrypt = require('bcrypt');
-const dbConnection = require('./database');
-const { body, validationResult } = require('express-validator');
 
+app.post('/register', jsonParser, function(req, res, next){
 
-// APPLY COOKIE SESSION MIDDLEWARE
-app.use(cookieSession({
-    name: 'session',
-    keys: ['key1', 'key2'],
-    maxAge:  3600 * 1000 // 1hr
-}));
-
-const ifLoggedin = (req,res,next) => {
-    if(req.session.isLoggedIn){
-        return res.redirect('/');
-    }
-    next();
-}
-
-app.post('/register', ifLoggedin, 
-
-[
-    body('email','Invalid email address!').isEmail().custom((value) => {
-        return dbConnection.execute('SELECT `email` FROM `users` WHERE `email`=?', [value])
-        .then(([rows]) => {
-            if(rows.length > 0){
-                return Promise.reject('This E-mail already in use!');
+    const { email, password, fname, lname, cfpassword } = req.body;
+  
+    if(cfpassword == password){
+  
+      var sql = 'select * from users where email = ?;';
+  
+      connection.query(sql,[email], function(err, result, fields){
+        if(err) throw err;
+  
+        if(result.length > 0){
+          req.session.flag = 1;
+          res.redirect('/');
+        }else{
+  
+          var hashpassword = bcrypt.hashSync(password, 10);
+          var sql = 'INSERT INTO users(email, password, fname, lname) VALUES(?, ?, ?, ?);';
+  
+          connection.query(sql,[email, hashpassword, fname, lname ], function(err, result, fields){
+            if (err) {
+                console.log("ไม่สามารถเพิ่มข้อมูลได้", err);
+                return res.json({status: "errorr", message: 'ไม่สามารถเพิ่มข้อมูล Users ได้',err});
+                //return res.status(400).send();
             }
-            return true;
-        });
-    }),
-],
-(req,res,next) => {
-
-    const validation_result = validationResult(req);
-    const {email, password, fname, lname} = req.body;
-    
-    if(validation_result.isEmpty()){
-        
-        bcrypt.hash(password, 12).then((hash_pass) => {
-
-            if(!(email && password && fname && lname)){
+            if(!(email && password && fname && lname && cfpassword)){
                 return res.json({status: "error", message: 'กรุณากรอก Users ให้ครบทั้งหมด'});
               }
-            
-            connection.execute("INSERT INTO `users`(email, password, fname, lname) VALUES(?,?,?,?)",[email, hash_pass, fname, lname])
-            .then(result => {
-                return res.status(201).json({status: "ok", message: "เพิ่มข้อมูลได้สำเร็จ"});
-            }).catch(err => {
-                if (err) {
-                    console.log("ไม่สามารถเพิ่มข้อมูลได้", err);
-                  return res.json({status: "errorr", message: 'ไม่สามารถเพิ่มข้อมูล Users ได้',err});
-                }
-            });
-        })
-        .catch(err => { 
-            if (err) throw err;
-        })
+              
+              return res.status(201).json({status: "ok", message: "เพิ่มข้อมูลได้สำเร็จ"});
+          });
+        }
+      });
+    }else{
+        console.log(err);
+        return res.status(500).send();
     }
-    else{
-        let allErrors = validation_result.errors.map((error) => {
-            return error.msg;
-        });
-        res.render('/',{
-            register_error:allErrors,
-            old_data:req.body
-        });
-    }
-});
+  });
