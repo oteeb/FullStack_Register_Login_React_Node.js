@@ -56,6 +56,7 @@ export default function SignUp() {
           alert('กรุณากรอกข้อมูล Users ให้ครบทั้งหมด !')
         }else if (data.status === 'errorremail'){
           alert('มี Email นี้อยู่แล้ว !')
+          window.location = '/login'
         }else if (data.status === 'errorpassword'){
           alert('Password ไม่ตรงกัน !')
         }
