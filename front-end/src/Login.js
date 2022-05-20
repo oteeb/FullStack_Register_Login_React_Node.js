@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -18,12 +16,11 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
 import { useForm } from "react-hook-form";
 
-
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="/">
         Your Website
       </Link>{' '}
       {new Date().getFullYear()}
@@ -54,7 +51,7 @@ export default function SignInSide() {
     .then(response => response.json())
     .then(data => {
         if(data.status === 'ok'){
-          alert('login สำเสร็จ')
+          //alert('login สำเสร็จ')
           localStorage.setItem('token', data.token);
           window.location = '/album'
         }else {
@@ -130,6 +127,7 @@ export default function SignInSide() {
                 error={!!errors?.email}
                 helperText={errors?.email ? errors.email.message : null}
               />
+              
               <TextField
                 InputProps={{
                   startAdornment: (
@@ -151,6 +149,7 @@ export default function SignInSide() {
                 })}
                 error={!!errors?.password}
                 helperText={errors?.password ? errors.password.message : null}
+
               />
               
               <Button
